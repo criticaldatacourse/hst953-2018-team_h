@@ -1,2 +1,2 @@
-# teamplate_project
-HST.953 Final Project Template
+# 2018 HST.953 Final Project
+Project Template
