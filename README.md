@@ -1,4 +1,5 @@
-# 2018 HST.953 - (YOUR PROJECT TITLE)
+### 2018 HST.953
+# (YOUR PROJECT TITLE)
 
 Project Template
 
