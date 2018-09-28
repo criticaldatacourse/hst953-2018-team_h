@@ -1,5 +1,5 @@
 # Hemodilution Effect among patients with Fluid Resuscitation 
-* **Amita Ketkar** , **Mingyu lu**
+**Amita Ketkar** , **Mingyu lu**
 
 ### Introduction:
 
