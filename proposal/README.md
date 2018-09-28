@@ -51,7 +51,7 @@ We do not have access to information for prior fluid resuscitation through our I
 We are immensely grateful to Dr. Nikhil Shankar, Andre Silva and Dr. Leo A. Celi for their guidance and invaluable inputs to this proposal draft. 
 
 ### References:
-[1]  Hemodilution. (n.d.). Retrieved from https://www.merriam-webster.com/dictionary/hemodilution__
+[1]  Hemodilution. (n.d.). Retrieved from https://www.merriam-webster.com/dictionary/hemodilution <\br>
 [2] Low hemoglobin count Causes. (2018, April 07). Retrieved from https://www.mayoclinic.org/symptoms/low-hemoglobin/basics/causes/sym-20050760__
 [3] Perel, A. (2017). Iatrogenic hemodilution: A possible cause for avoidable blood transfusions? Critical Care,21(1). doi:10.1186/s13054-017-1872-1
 [4] Johnson AEW, Pollard TJ, Shen L, Lehman L, Feng M, Ghassemi M, Moody B, Szolovits P, Celi LA, Mark RG. MIMIC-III, a freely accessible critical care database. Scientific Data (2016). 
