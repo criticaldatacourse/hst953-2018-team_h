@@ -1,20 +1,6 @@
 # Hemodilution Effect among patients with Fluid Resuscitation 
 Amita Ketkar , Mingyu lu
 
-
-Before initiating any project, it is essential to develop a plan. Planning ensures that the project can be
-done effectively, and that components are defined in sufficient detail to facilitate efficient execution.
-
-The purpose of this assignment is to introduce the process of planning research projects prior to their
-initiation. The format roughly follows what may be submitted as part of a funding request or grant
-application, or alternatively one might receive something similar from a colleague when working as a
-data analyst or biostatistician. The plan for data analysis is not required, as this topic has not yet been
-covered in the course, but it is also an important topic to cover in a proposal.
-
-Each group is required to submit a draft proposal and final proposal for the project representing the
-group’s combined efforts. For students taking the course for credit, the draft and final proposals will
-contribute to the course grade as delineated in the course syllabus.
-
 ### Introduction:
 
 Decreased concentration of cells and solids in blood is called hemodilution[1]. Haemoglobin concentration can be a marker for haemodilution. Low Haemoglobin(Hb) concentration in blood can be either due to diseases such as anemia, liver cirrhosis, leukemia or conditions like sickle cell anemia, thalassemia, splenomegaly which cause the destruction of red blood cells. Blood loss( internal or external) will also reduce Hb concentration[2].It is commonly believed, fluid administration results in hemodilution in turn reducing Hb concentration. Fluid administration(resuscitation) is a very common procedure in hospital mainly directed at improving microcirculation and attain better oxygen delivery[3]. Several studies discuss about how to minimize hemodilution effect in cardiac surgery during cardiopulmonary bypass due to fluids[7]. There are few prediction models which calculate the hemodilution rate due to bypass surgery[8]. Furthermore,one study shows strong association between fluid resuscitation and hemoglobin concentration among patients in septic shock[9]. Another study found significant change in Hb, Hct, WBC, platelet, BUN, BE, HCO3, and PCO2 levels after saline infusion in trauma patients[10].  However, clear guidelines do not exist for determination of the extent of hemodilution acceptable after administration of fluid. If we can predict the expected amount of hemodilution after fluid administration before any surgical intervention; we can detect abnormal changes( eg. due to internal bleeding) early and provide better treatment to patients.
