@@ -1,5 +1,5 @@
 # Hemodilution Effect among patients with Fluid Resuscitation 
-**Amita Ketkar** , **Mingyu lu**
+* **Amita Ketkar** , **Mingyu lu**
 
 ### Introduction:
 
@@ -11,8 +11,8 @@ We hypothesize that intravenous(IV) fluid administration results in hemodilution
 
 ### Research Question / Objective:
 
-1. To identify and quantify the change in hemoglobin concentration after IV fluid resuscitation among critically ill patients using hospital registry data for patients admitted in ICU. 
-2. To build a simplified predictive model of expected hemodilution after fluid resuscitation. 
+ * To identify and quantify the change in hemoglobin concentration after IV fluid resuscitation among critically ill patients using hospital registry data for patients admitted in ICU. 
+ * To build a simplified predictive model of expected hemodilution after fluid resuscitation. 
 
 ### Methods
 
