@@ -51,13 +51,13 @@ We do not have access to information for prior fluid resuscitation through our I
 We are immensely grateful to Dr. Nikhil Shankar, Andre Silva and Dr. Leo A. Celi for their guidance and invaluable inputs to this proposal draft. 
 
 ### References:
-[1]  Hemodilution. (n.d.). Retrieved from https://www.merriam-webster.com/dictionary/hemodilution <br />
-[2] Low hemoglobin count Causes. (2018, April 07). Retrieved from https://www.mayoclinic.org/symptoms/low-hemoglobin/basics/causes/sym-20050760__<br />
+[1]  [Hemodilution. (n.d.)](https://www.merriam-webster.com/dictionary/hemodilution) <br />
+[2] [Low hemoglobin count Causes. (2018, April 07)](https://www.mayoclinic.org/symptoms/low-hemoglobin/basics/causes/sym-20050760)<br />
 [3] Perel, A. (2017). Iatrogenic hemodilution: A possible cause for avoidable blood transfusions? Critical Care,21(1). doi:10.1186/s13054-017-1872-1<br />
 [4] Johnson AEW, Pollard TJ, Shen L, Lehman L, Feng M, Ghassemi M, Moody B, Szolovits P, Celi LA, Mark RG. MIMIC-III, a freely accessible critical care database. Scientific Data (2016). <br />
 [5] Goldberger AL, Amaral LAN, Glass L, Hausdorff JM, Ivanov PCh, Mark RG, Mietus JE, Moody GB, Peng C-K, Stanley HE. PhysioBank, PhysioToolkit, and PhysioNet: Components of a New Research Resource for Complex Physiologic Signals. Circulation 101(23):e215-e220 [Circulation Electronic Pages; http://circ.ahajournals.org/content/101/23/e215.full]; 2000 (June 13).<br />
 [6] Pollard, T. (n.d.). Getting Started. Retrieved from https://eicu-crd.mit.edu/<br />
-[7]Preventive Strategies for Minimizing Hemodilution in the Cardiac Surgery Patient During Cardiopulmonary Bypass https://www.jcvaonline.com/article/S1053-0770(15)00747-8/fulltext<br />
-[8] R., H., K., N., K., O., . . . Genta. (2018, June 04). Novel method for estimating the total blood volume: The importance of adjustment using the ideal body weight and age for the accurate prediction of haemodilution during cardiopulmonary bypass | Interactive CardioVascular and Thoracic Surgery | Oxford Academic. Retrieved from https://academic.oup.com/icvts/advance-article/doi/10.1093/icvts/ivy173/5033023<br />
-[9]The relationship between the decrease in haemoglobin concentration and the volume of fluids administered during resuscitation from septic shock may not be so “weak” https://ccforum.biomedcentral.com/articles/10.1186/s13054-018-2118-6 <br />
-[10]Paydar, S., Bazrafkan, H., Golestani, N., Roozbeh, J., Akrami, A., & Moradi, A. M. (2014). Retrieved from https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4614590/<br />
+[7][Preventive Strategies for Minimizing Hemodilution in the Cardiac Surgery Patient During Cardiopulmonary Bypass] (https://www.jcvaonline.com/article/S1053-0770(15)00747-8/fulltext)<br />
+[8] [R., H., K., N., K., O., . . . Genta. (2018, June 04). Novel method for estimating the total blood volume: The importance of adjustment using the ideal body weight and age for the accurate prediction of haemodilution during cardiopulmonary bypass | Interactive CardioVascular and Thoracic Surgery | Oxford Academic.](https://academic.oup.com/icvts/advance-article/doi/10.1093/icvts/ivy173/5033023)<br />
+[9][The relationship between the decrease in haemoglobin concentration and the volume of fluids administered during resuscitation from septic shock may not be so “weak”](https://ccforum.biomedcentral.com/articles/10.1186/s13054-018-2118-6) <br />
+[10][Paydar, S., Bazrafkan, H., Golestani, N., Roozbeh, J., Akrami, A., & Moradi, A. M. (2014)](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4614590/)<br />
