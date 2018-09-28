@@ -48,7 +48,7 @@ We do not have access to information for prior fluid resuscitation through our I
 
 ### Acknowledgements:
 
-We are immensely grateful to Dr. Nikhil Shankar, Andre Silva and Dr. Leo A. Celi for their guidance and invaluable inputs to this proposal draft. 
+We are immensely grateful to **Dr. Nikhil Shankar, Andre Silva and Dr. Leo A. Celi** for their guidance and invaluable inputs to this proposal draft. 
 
 ### References:
 [1]  [Hemodilution. (n.d.)](https://www.merriam-webster.com/dictionary/hemodilution) <br />
