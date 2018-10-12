@@ -31,11 +31,14 @@ Our study will be built on hospital-based, open, prospective data collected in t
 ### Study Population and Exposure:
 
 We will identify subjects admitted to intensive care units between 2001 to 2012 without the diagnosis of internal or external bleeding or bleeding disorders. We will include data from the first ICU admission during a patient’s hospitalization and focus on the first 24 hours of this first ICU admission. For patients with multiple ICU stays, only the first ICU admission per hospitalization will be considered. The main exposure of interest is 0.9 % saline which will be obtained from inputevents_cv or inputevents_mv,  tables of MIMIC III database which record events that occurred during the patient ICU stay related to the fluid input to patients. Therefore, we will exclude subjects who received other fluids such as dextrose-containing fluids or Lactated Ringer’s. The volume of fluid and antibiotics/medications given along with the saline are important factors to consider. If the patient is given medications like vitamins or antibiotics through 0.9% saline vehicle, we will use the standard conversion rates on Sigma Pump documentation, provided by hospital pharmacy, to determine the corresponding volume of fluid. 
+
 Inclusion criteria of subjects are defined as below
  * Age between 18 - 64
  * Received NS within 24 hrs after admission 
  * Received Hgb or Hct draw at least twice per day
-We will exclude subjects who are under the diagnoses of the following conditions. The information will be accessed through diagnosis_icd table of MIMIC-III database. 
+</br>
+We will exclude subjects who are under the diagnoses of the following conditions. The information will be accessed through diagnosis_icd table of MIMIC-III database. </br>
+
  * Administered fluids other than 0.9 % normal saline within 24 hr after admission
  * Hemorrhage, active bleeding or any sign of internal or external bleeding
  * History of recent major trauma
