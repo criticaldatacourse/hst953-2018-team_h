@@ -36,7 +36,7 @@ Inclusion criteria of subjects are defined as below
  * Age between 18 - 64
  * Received NS within 24 hrs after admission 
  * Received Hgb or Hct draw at least twice per day
-</br>
+
 We will exclude subjects who are under the diagnoses of the following conditions. The information will be accessed through diagnosis_icd table of MIMIC-III database. </br>
 
  * Administered fluids other than 0.9 % normal saline within 24 hr after admission
