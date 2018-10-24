@@ -1,0 +1,27 @@
+
+  select distinct
+     co.subject_id
+  from `physionet-data.mimiciii_clinical`.`icustays` co
+  inner join `physionet-data.mimiciii_clinical`.`inputevents_cv` cv
+  on co.icustay_id = cv.icustay_id
+  where cv.itemid not in  (
+    30352,
+    30018,
+    44440,
+    44053,
+    30190,
+    41913,
+    40865,
+    42548,
+    41695,
+    41490,
+    42844,
+    44491,
+    45137,
+    46314,
+    45989,
+    42749,
+    41467,
+    44983,
+    44741
+  )
