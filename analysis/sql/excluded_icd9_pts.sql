@@ -1,4 +1,4 @@
-with t1 as(
+with t1 as( 
               select  subject_id,HADM_ID
               from  `physionet-data.mimiciii_clinical.diagnoses_icd`
               where ICD9_CODE in
