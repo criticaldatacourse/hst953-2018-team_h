@@ -1,0 +1,113 @@
+---
+title: "Visualisation_mit"
+author: "Amita Ketkar"
+date: "11/1/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(tidyverse)
+```
+
+## R Markdown
+For setting working directory (make sure where all your files are)
+```{r}
+setwd(getwd())
+mydata<- (read_csv("results.csv" ))
+newtable <- (read_csv("results1.csv"))
+df <- data.frame(mydata)
+```
+
+For histogram of fluid intake , and log tranformed data
+```{r}
+df$transd<- (log10(df$total_ns))
+df %>% 
+  ggplot(aes(x = total_ns_cv)) +
+  geom_histogram(color = "black") +
+  xlab("Total fluid distribution") +
+  ggtitle("Preliminary exploration")
+df %>% 
+  ggplot(aes(x = transd)) +
+  geom_histogram(color = "black") +
+  xlab("Log tranformed- Total fluid distribution") +
+  ggtitle("Preliminary exploration")
+
+```
+
+For histogram of hemoglobin recorded
+```{r}
+df %>% 
+  ggplot(aes(x = HEMOGLOBIN_1st)) +
+  geom_histogram(color = "black") +
+  xlab("hgb distribution baseline") +
+  ggtitle("Preliminary exploration")
+
+
+```
+ Check if the Hmoglobin after 24 hours distribution
+```{r}
+df %>% 
+  ggplot(aes(x = hemoglobin_24)) +
+  geom_histogram(color = "black") +
+  xlab("hgb distribution baseline") +
+  ggtitle("Preliminary exploration")
+
+sd(df$hemoglobin_24)
+mean(df$hemoglobin_24)
+max(df$hemoglobin_24)
+
+df %>% 
+  ggplot(aes(x = differ)) +
+  geom_histogram(color = "black") +
+  xlab("hgb distribution baseline") +
+  ggtitle("Preliminary exploration")
+
+
+
+```
+
+ For evaluation association between the hemoglobin at baseline and fluid given
+ 
+```{r}
+# sanity check . get the values of hemoglobin for a patient and plot the values over time 
+# Hgb remain stable over time or there is change over time 
+# saline by weight of person 
+
+df %>% 
+  ggplot(aes(x = differ, y= total_ns_cv)) +
+  geom_point(color = "black") +
+  xlab("difference") +
+  ylab("total fluid")+
+  ggtitle("Preliminary exploration")
+```
+
+Run a regressin and check for association 
+```{r}
+#df <- df %>%filter (hgb_difference >= 0)
+fit <- lm( differ ~ total_ns_cv, data=df)
+summary(fit)
+confint(fit, level=0.95)
+plot(fit)
+
+fit1 <- lm( differ ~ transd, data=df)
+summary(fit1)
+confint(fit1, level=0.95)
+plot(fit1)
+```
+
+For new table data for the 
+
+```{r}
+dfr <- data.frame(newtable)
+# 
+dfr %>% filter (subject_id == 18944)
+
+dfr %>% 
+  ggplot(aes(x = valuenum)) +
+  geom_histogram(color = "black") 
+  
+dfr[order(dfr$charttime),] 
+```
+
