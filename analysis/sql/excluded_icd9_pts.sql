@@ -35,7 +35,7 @@ with t1 as(
                     		ICD9_CODE LIKE "5856%" or
                     		ICD9_CODE LIKE "V56%" or
                     		ICD9_CODE LIKE "V4511%"
-              		))
+              		)) 
               group by subject_id,HADM_ID
               )
 select t1.subject_id, t1.hadm_id, icu.icustay_id from t1
