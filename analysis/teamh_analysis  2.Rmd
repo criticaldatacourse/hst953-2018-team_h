@@ -1,0 +1,173 @@
+---
+title: "Visualisation_mit"
+author: "Amita Ketkar"
+date: "11/1/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(tidyverse)
+```
+
+## R Markdown
+For setting working directory (make sure where all your files are)
+```{r}
+setwd(getwd())
+mydata<- (read_csv("results.csv" ))
+newtable <- (read_csv("results1.csv"))
+table_new <- (read_csv("results-20181109-113541.csv"))
+df <- data.frame(mydata)
+df1 <- data.frame(table_new)
+```
+
+For histogram of fluid intake , and log tranformed data
+```{r}
+
+df3 %>% 
+  ggplot(aes(x = total_ns)) +
+  geom_histogram(color = "black") +
+  xlab("Total fluid distribution") +
+  ggtitle("Preliminary exploration")
+
+df2 <- df1[order(df1$total_ns),]
+df2$id <- seq_along(1:1877)
+df3<- df2[1:1858,]
+
+
+
+
+```
+
+For histogram of hemoglobin recorded
+```{r}
+df3 %>% 
+  ggplot(aes(x = HEMOGLOBIN_1st)) +
+  geom_histogram(color = "black") +
+  xlab("hgb distribution baseline") +
+  ggtitle("Preliminary exploration")
+
+
+```
+ Check if the Hmoglobin after 24 hours distribution
+```{r}
+df3 %>% 
+  ggplot(aes(x = hemoglobin_24)) +
+  geom_histogram(color = "black") +
+  xlab("hgb distribution baseline") +
+  ggtitle("Preliminary exploration")
+
+sd(df1$hemoglobin_24)
+mean(df1$hemoglobin_24)
+max(df1$hemoglobin_24)
+
+df3 %>% 
+  ggplot(aes(x = hgb_difference)) +
+  geom_histogram(color = "black") +
+  #scale_x_continuous(breaks = c(0.2,0.1,0,-0.1,-0.2,-0.3,-0.4,-0.5,-0.6,-0.7,-0.8,-0.9,-1.0,-1.1,-1.2,-1.3,-1.4,-1.5,-1.6,-1.7,-1.8,-1.9,-2.0,-2.1,-2.2,-2.3,-2.4,-2.5,-2.6,-2.7,-2.8,-2.9,-3.0,-3.1,-3.2,-3.3,-3.4,-3.5,-3.6,-3.7,-3.8,-3.9,-4.0,-4.1,-4.2,-4.3,-4.4,-4.5,-4.6,-4.7,-4.8,-4.9,-5.0,-5.1,-5.2,-5.3,-5.4,-5.5,-5.6,-5.7,-5.8,-5.9,-6.0,-6.1,-6.2,-6.3,-6.4,-6.5,-6.6,-6.7,-6.8,-6.9,-7.0))+
+  ggtitle("Preliminary exploration")
+  #theme(axis.text.x = element_text(angle= 90, size = 5))
+
+
+# df1$transformedhgb <- 1/(df1$hgb_difference) 
+# 
+# df1 %>% 
+#   ggplot(aes(x = transformedhgb)) +
+#   geom_histogram(color = "black") +
+#   #scale_x_continuous(breaks = c(0.2,0.1,0,-0.1,-0.2,-0.3,-0.4,-0.5,-0.6,-0.7,-0.8,-0.9,-1.0,-1.1,-1.2,-1.3,-1.4,-1.5,-1.6,-1.7,-1.8,-1.9,-2.0,-2.1,-2.2,-2.3,-2.4,-2.5,-2.6,-2.7,-2.8,-2.9,-3.0,-3.1,-3.2,-3.3,-3.4,-3.5,-3.6,-3.7,-3.8,-3.9,-4.0,-4.1,-4.2,-4.3,-4.4,-4.5,-4.6,-4.7,-4.8,-4.9,-5.0,-5.1,-5.2,-5.3,-5.4,-5.5,-5.6,-5.7,-5.8,-5.9,-6.0,-6.1,-6.2,-6.3,-6.4,-6.5,-6.6,-6.7,-6.8,-6.9,-7.0))+
+#   ggtitle("Preliminary exploration")+
+#   theme(axis.text.x = element_text(angle= 90, size = 5))
+```
+
+ For evaluation association between the hemoglobin at baseline and fluid given
+ 
+```{r}
+# sanity check . get the values of hemoglobin for a patient and plot the values over time 
+# Hgb remain stable over time or there is change over time 
+# saline by weight of person 
+
+df3 %>% 
+  ggplot(aes(x = hgb_difference, y= total_ns)) +
+  geom_point(color = "black") +
+  xlab("difference") +
+  ylab("total fluid")+
+  ggtitle("Preliminary exploration")
+```
+
+Run a regressin and check for association 
+```{r}
+#df <- df %>%filter (hgb_difference >= 0)
+fit <- lm( hgb_difference ~ total_ns, data=df1)
+summary(fit)
+confint(fit, level=0.95)
+plot(fit)
+
+fit1 <- lm( differ ~ transd, data=df)
+summary(fit1)
+confint(fit1, level=0.95)
+plot(fit1)
+```
+
+For new table data for the 
+
+```{r}
+dfr <- data.frame(newtable)
+# 
+
+  
+dfr[order(dfr$charttime),] 
+dfr %>%
+  separate(charttime, c("date", "time"), " ") %>%
+  dfr[order(dfr$date),]
+
+
+
+
+```
+
+##manipulating the height and weight 
+
+```{r}
+# read in table with gender added.Same sample size as complete info. MAke it a dataframe
+tab <-(read.table("results-20181109-173519.csv",header = T, sep = ","))
+#read in table with height added. Information not present for all. make it a dataframe 
+tabl<-(read.table("results-20181109-173808.csv", header = T, sep =","))
+
+table_new <- (read.table("results-20181112-142212.csv", header = T, sep = ","))
+
+library("plyr")
+fframe2 <- ddply(table_new, .(icustay_id), summarise, mean_wt=mean(Weight))
+# 
+# library(dplyr)
+# subset(tab, icustay_id %in% fframe2$icustay_id)
+
+
+table_new$fluidwt <- table_new$total_ns/fframe2$mean_wt
+
+table_new %>% 
+  ggplot(aes(x = HEMOGLOBIN_1st)) +
+  geom_histogram(color = "black") +
+  xlab("hgb distribution baseline") +
+  ggtitle("Preliminary exploration")
+
+table_new %>% 
+  ggplot(aes(x = hemoglobin_24)) +
+  geom_histogram(color = "black") +
+  xlab("hgb distribution baseline") +
+  ggtitle("Preliminary exploration")
+
+table_new %>% 
+  ggplot(aes(x = hgb_difference, y= fluidwt)) +
+  geom_point(color = "black") +
+  xlab("difference") +
+  ylab("total fluid by weight")+
+  ggtitle("Preliminary exploration")
+
+
+fit <- lm( hgb_difference ~ total_ns+Gender+Weight, data=table_new)
+summary(fit)
+confint(fit, level=0.95)
+plot(fit)
+```
+
