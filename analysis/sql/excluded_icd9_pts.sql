@@ -4,9 +4,6 @@ with t1 as(
               where ICD9_CODE in
               (select ICD9_CODE
               	from `physionet-data.mimiciii_clinical.d_icd_diagnoses`
-                   where ROW_ID in(
-                    	select ROW_ID
-                    	from `physionet-data.mimiciii_clinical.d_icd_diagnoses`
                     		where ICD9_code  LIKE "578%" or
                     		ICD9_code LIKE "53%" or
                     		ICD9_CODE LIKE "7863%" or
@@ -35,7 +32,7 @@ with t1 as(
                     		ICD9_CODE LIKE "5856%" or
                     		ICD9_CODE LIKE "V56%" or
                     		ICD9_CODE LIKE "V4511%"
-              		)) 
+              		)
               group by subject_id,HADM_ID
               )
 select t1.subject_id, t1.hadm_id, icu.icustay_id from t1
