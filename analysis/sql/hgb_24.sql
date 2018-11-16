@@ -46,8 +46,8 @@ SELECT pvt.*, DENSE_RANK() OVER (PARTITION BY
 FROM pvt
 where pvt.hr <= 24 and pvt.hadm_id in (select hadm_id from `hst-953-2018.team_h.included_pt_receive_ns`)
 )
-SELECT r.subject_id, r.hadm_id, r.icustay_id
-  , max(case when label = 'HEMOGLOBIN' then valuenum else null end) as HEMOGLOBIN_1st
+SELECT r.subject_id, r.hadm_id, r.icustay_id, max(r.charttime) as last_measurement
+  , max(case when label = 'HEMOGLOBIN' then valuenum else null end) as HEMOGLOBIN_24
 FROM ranked r
 left join `hst-953-2018.team_h.pt_with_ns` h
 on h.subject_id = r.subject_id
