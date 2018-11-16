@@ -6,6 +6,8 @@ WITH pvt AS (
   , CASE
         when itemid = 50811 then 'HEMOGLOBIN'
         when itemid = 51222 then 'HEMOGLOBIN'
+        when itemid = 50855 then 'HEMOGLOBIN'
+
       ELSE null
       END AS label
   , -- add in some sanity checks on the values
@@ -14,6 +16,8 @@ WITH pvt AS (
     CASE
       when le.itemid = 50811 and le.valuenum >    50 then null -- g/dL 'HEMOGLOBIN'
       when le.itemid = 51222 and le.valuenum >    50 then null -- g/dL 'HEMOGLOBIN'
+      when le.itemid = 50855 and le.valuenum >    50 then null -- g/dL 'HEMOGLOBIN'
+
     ELSE le.valuenum
     END AS valuenum
   FROM `physionet-data.mimiciii_clinical.icustays` ie
@@ -23,7 +27,8 @@ WITH pvt AS (
     AND le.itemid IN
     (
       51222, -- HEMOGLOBIN | HEMATOLOGY | BLOOD | 752523
-      50811 -- HEMOGLOBIN | BLOOD GAS | BLOOD | 89712
+      50811, -- HEMOGLOBIN | BLOOD GAS | BLOOD | 89712
+      50855
     )
     AND le.valuenum IS NOT null 
     AND le.valuenum > 0 -- lab values cannot be 0 and cannot be negative
@@ -37,15 +42,15 @@ WITH pvt AS (
 ),
 ranked AS (
 SELECT pvt.*, DENSE_RANK() OVER (PARTITION BY 
-    pvt.subject_id, pvt.hadm_id,pvt.icustay_id,pvt.label ORDER BY pvt.charttime) as drank
+    pvt.subject_id, pvt.hadm_id,pvt.icustay_id,pvt.label ORDER BY pvt.charttime desc) as drank
 FROM pvt
-where pvt.hr >24 and pvt.subject_id  in (select subject_id from `hst-953-2018.team_h.included_pt`)
+where pvt.hr <= 24 and pvt.hadm_id in (select hadm_id from `hst-953-2018.team_h.included_pt_receive_ns`)
 )
 SELECT r.subject_id, r.hadm_id, r.icustay_id
   , max(case when label = 'HEMOGLOBIN' then valuenum else null end) as HEMOGLOBIN_1st
 FROM ranked r
-left join `hst-953-2018.team_h.first_hgb_before_ns` h
-on h.subject_id = r.subject_id 
-WHERE r.drank = 1 and h.subject_id in (select subject_id from `hst-953-2018.team_h.first_hgb_before_ns`)
+left join `hst-953-2018.team_h.pt_with_ns` h
+on h.subject_id = r.subject_id
+WHERE r.drank = 1 and h.starttime > r.charttime 
 GROUP BY r.subject_id, r.hadm_id, r.icustay_id, r.drank
 ORDER BY r.subject_id, r.hadm_id, r.icustay_id, r.drank;
