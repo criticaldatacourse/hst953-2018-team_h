@@ -5,23 +5,23 @@ with t1 as(
               (select ICD9_CODE
               	from `physionet-data.mimiciii_clinical.d_icd_diagnoses`
                     		where ICD9_code  LIKE "578%" or
-                        ICD_code LIKE "5320%", 
-                        ICD_code LIKE '5322%', 
-                        ICD_code LIKE'5324%', 
-                        ICD_code LIKE'5326%',
-                        ICD_code LIKE '5310%',
-                        ICD_code LIKE '5312%', 
-                        ICD_code LIKE'5314%',
-                        ICD_code LIKE '5316%',
-                        ICD_code LIKE'5330%',
-                        ICD_code LIKE '5332%',
-                        ICD_code LIKE'5334%',
-                        ICD_code LIKE '5336%',  
-                        ICD_code LIKE '5340%', 
-                        ICD_code LIKE '5342%', 
-                        ICD_code LIKE '5344%', 
-                        ICD_code LIKE '5346%',
-                        ICD_code LIKE  '5351%',
+                        ICD9_code LIKE "5320%"or
+                        ICD9_code LIKE '5322%'or 
+                        ICD9_code LIKE'5324%'or
+                        ICD9_code LIKE'5326%'or
+                        ICD9_code LIKE '5310%'or
+                        ICD9_code LIKE '5312%'or 
+                        ICD9_code LIKE'5314%'or
+                        ICD9_code LIKE '5316%'or
+                        ICD9_code LIKE'5330%'or
+                        ICD9_code LIKE '5332%'or
+                        ICD9_code LIKE'5334%'or
+                        ICD9_code LIKE '5336%'or 
+                        ICD9_code LIKE '5340%'or
+                        ICD9_code LIKE '5342%'or
+                        ICD9_code LIKE '5344%'or
+                        ICD9_code LIKE '5346%'or
+                        ICD9_code LIKE  '5351%'or
                     		ICD9_CODE LIKE "7863%" or
                     		lower(LONG_TITLE) Like "%hemoptysis%"or
                     		ICD9_CODE LIKE "456%" or
@@ -47,10 +47,11 @@ with t1 as(
                     		ICD9_CODE LIKE "5855%" or
                     		ICD9_CODE LIKE "5856%" or
                     		ICD9_CODE LIKE "V56%" or
-                    		ICD9_CODE LIKE "V4511%" or 
+                    		ICD9_CODE LIKE "V4511%"  
               		)
               group by subject_id,HADM_ID
               )
 select t1.subject_id, t1.hadm_id, icu.icustay_id from t1
               left join `physionet-data.mimiciii_clinical.icustays` as icu
               on t1.hadm_id = icu.hadm_id
+              
