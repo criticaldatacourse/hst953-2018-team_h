@@ -49,8 +49,8 @@ where pvt.hr <= 24 and pvt.hadm_id in (select hadm_id from `hst-953-2018.team_h.
 SELECT r.subject_id, r.hadm_id, r.icustay_id,min(r.intime) as admission_time, max(r.charttime) as last_measurement
   , max(case when label = 'HEMOGLOBIN' then valuenum else null end) as HEMOGLOBIN_24
 FROM ranked r
-left join `hst-953-2018.team_h.pt_with_ns` h
-on h.subject_id = r.subject_id
-WHERE r.drank = 1 and h.starttime > r.charttime 
+left join `hst-953-2018.team_h.pt_receive_ns_within24_18_80` h
+on h.hadm_id = r.hadm_id
+WHERE r.drank = 1 
 GROUP BY r.subject_id, r.hadm_id, r.icustay_id, r.drank
 ORDER BY r.subject_id, r.hadm_id, r.icustay_id, r.drank;
