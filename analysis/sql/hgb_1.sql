@@ -1,5 +1,5 @@
 WITH pvt AS (
-  SELECT ie.subject_id, ie.hadm_id, ie.icustay_id, le.charttime,
+  SELECT ie.subject_id, ie.hadm_id, ie.icustay_id, le.charttime,ie.intime,
   DATETIME_DIFF(le.charttime, ie.intime, SECOND)/60.0/60.0 as hr
   -- here we assign labels to ITEMIDs
   -- this also fuses together multiple ITEMIDs containing the same data
@@ -44,13 +44,13 @@ ranked AS (
 SELECT pvt.*, DENSE_RANK() OVER (PARTITION BY 
     pvt.subject_id, pvt.hadm_id,pvt.icustay_id,pvt.label ORDER BY pvt.charttime) as drank
 FROM pvt
-where  pvt.hadm_id in (select hadm_id from `hst-953-2018.team_h.valid_pt_received_ns`)
+where  hr >= 0 and pvt.hadm_id in (select hadm_id from `hst-953-2018.team_h.valid_pt_received_ns`)
 )
-SELECT r.subject_id, r.hadm_id, r.icustay_id, min(r.charttime) as first_measurement
+SELECT r.subject_id, r.hadm_id, r.icustay_id, min(r.intime) as admission_time, min(r.charttime) as first_measurement
   , max(case when label = 'HEMOGLOBIN' then valuenum else null end) as HEMOGLOBIN_1st
 FROM ranked r
 left join `hst-953-2018.team_h.pt_receive_ns_within24_18_80` h
 on h.subject_id = r.subject_id
-WHERE r.drank = 1 and h.ns_given_time > r.charttime 
+WHERE r.drank = 1 and h.ns_given_time >= r.charttime 
 GROUP BY r.subject_id, r.hadm_id, r.icustay_id, r.drank
 ORDER BY r.subject_id, r.hadm_id, r.icustay_id, r.drank;
