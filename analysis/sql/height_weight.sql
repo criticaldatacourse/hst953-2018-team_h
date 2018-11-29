@@ -2,7 +2,7 @@ WITH FirstVRawData AS
   (SELECT c.charttime,
     c.itemid,c.subject_id,c.icustay_id,
     CASE
-      WHEN c.itemid IN (762, 763, 3723, 3580, 3581, 3582, 226512)
+      WHEN c.itemid IN (762, 763, 3723, 3580, 3581, 3582, 226512,581,580,224639, 226531, 3693)
         THEN 'WEIGHT'
       WHEN c.itemid IN (920, 1394, 4187, 3486, 3485, 4188, 226707)
         THEN 'HEIGHT'
@@ -15,6 +15,8 @@ WITH FirstVRawData AS
         THEN c.valuenum * 0.0283495231
       WHEN c.itemid   IN (920, 1394, 4187, 3486, 226707)
         THEN c.valuenum * 2.54
+      WHEN c.itemid IN (3693)
+        THEN cast(c.valuenum as float64)
       ELSE c.valuenum
     END AS valuenum
   FROM `physionet-data.mimiciii_clinical.chartevents`  c
@@ -29,7 +31,8 @@ WITH FirstVRawData AS
     -- Metavision
     , 226707 -- Height (measured in inches)
     , 226512 -- Admission Weight (Kg)
-
+    , 226531
+    , 581,580,224639,3693
     -- note we intentionally ignore the below ITEMIDs in metavision
     -- these are duplicate data in a different unit
     -- , 226531 -- Admission Weight (lbs.)
