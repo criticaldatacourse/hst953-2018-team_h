@@ -194,6 +194,8 @@ table(predTrain, TrainSet$Condition)
 ```{r}
 completamente = completamente %>% mutate_if(is.character, as.factor)
 
+cor(complete$hr,complete$hgb_difference)
+
 complete.rf<-randomForest(as.numeric(hgb_difference)~as.numeric(completamente$total_ns_cv)+as.numeric(completamente$hr)+factor(completamente$Gender)+as.numeric(completamente$mean_age),data=completamente)
 
 set.seed(1123)
@@ -312,9 +314,11 @@ for(i in 1:nrow(hyper_grid)) {
   # add OOB error to grid
   hyper_grid$OOB_RMSE[i] <- sqrt(model$prediction.error)
 }
-
+hist(hyper_grid$OOB_RMSE)
 hyper_grid %>% 
-  hist(OOB_RMSE) %>%
+ dplyr::arrange(OOB_RMSE) %>%
   head(10)
 ```
+
+
 
