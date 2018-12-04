@@ -299,7 +299,9 @@ head(com_test$denormalized_hgb_diff)
 W = t(BstModel$coefs) %*% BstModel$SV
 #Find value of b
 b = BstModel$rho
-RMSEsvm= RMSE(predYBstdenorm,com_test$hgb_difference_norm)
+RMSEsvmbst = RMSE(PredYBst,com_test$hgb_difference_norm)
+RMSEsvmbst
+RMSEsvm= RMSE(predYBstdenorm,com_test$denormalized_hgb_diff)
 RMSEsvm
 ```
 
