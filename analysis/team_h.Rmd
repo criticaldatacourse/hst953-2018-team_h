@@ -56,16 +56,16 @@ complete$ethnicity_other <- ifelse(complete$ethnicity %in% c("OTHER", "UNABLE TO
 complete %>% filter(total_ns_cv <= 8000) %>%
   ggplot(aes(x = total_ns_cv)) +
   geom_histogram(color = "black") +
-  xlab("Total fluid distribution") +
-  ggtitle("Preliminary exploration")
+  xlab("Total fluid") +
+  ggtitle("Preliminary exploration for total fluid administered")
 
 ## Try log transformation 
 complete<- complete %>% mutate(tran_total_ns = log10(total_ns_cv))
 complete %>% filter(total_ns_cv <= 8000) %>%
   ggplot(aes(x = tran_total_ns)) +
   geom_histogram(color = "black", binwidth = 0.12) +
-  xlab("log of Total fluid distribution") +
-  ggtitle("Preliminary exploration")
+  xlab("log of Total fluid") +
+  ggtitle("Preliminary exploration for total fluid administered")
 ```
 ## Hemoglobin first measurement, last measurement, difference and time difference between two measurements   
 ```{r}
@@ -100,15 +100,15 @@ complete %>% filter(total_ns_cv <= 8000) %>%
 complete %>% filter(total_ns_cv <= 8000) %>% filter(cre_1st <10)%>%
   ggplot(aes(x = cre_1st)) +
   geom_histogram(color = "black") +
-  xlab("Creatinine first record") +
-  ggtitle("Preliminary exploration")
+  xlab("Creatinine level") +
+  ggtitle("Preliminary exploration for creatinine level")
 # Transforming this variable to be approximately normal
 complete<- complete %>% mutate(tran_cre = log10(cre_1st))
 complete %>% filter(total_ns_cv <= 8000) %>% filter(cre_1st< 10)%>%
   ggplot(aes(x = tran_cre)) +
   geom_histogram(color = "black", binwidth = 0.17) +
-  xlab(" log of Creatinine first record") +
-  ggtitle("Preliminary exploration")
+  xlab(" log of Creatinine level") +
+  ggtitle("Preliminary exploration for creatinine level")
 ```
 ## Urine output 
 ```{r}
@@ -117,14 +117,14 @@ complete %>% filter(total_ns_cv <= 8000) %>%
   ggplot(aes(x = uo_6hr)) +
   geom_histogram(color = "black") +
   xlab("Urine output in first 6 hours") +
-  ggtitle("Preliminary exploration")
+  ggtitle("Preliminary exploration urine output")
 # Transforming this variable to be approximately normal
 complete<- complete %>% mutate(tran_uo = log10(uo_6hr))
 complete %>% filter(total_ns_cv <= 8000) %>% 
   ggplot(aes(x = tran_uo)) +
   geom_histogram(color = "black", binwidth = 0.17) +
   xlab(" log of Urine output in first 6 hours ") +
-  ggtitle("Preliminary exploration")
+  ggtitle("Preliminary exploration urine output")
 ```
 ## Age 
 ```{r}
@@ -393,7 +393,7 @@ com_split <- initial_split(com, prop = .7)
 com_train <- training(com_split)
 com_test  <- testing(com_split)
 #Regression with SVM
-modelsvm = svm(hgb_difference_norm~.,com_train)
+modelsvm = svm(hgb_difference_norm~.,com_train, kernel="radial")
 #Predict using SVM regression
 predYsvm = predict(modelsvm, com_test)
 ##Calculate parameters of the SVR model
@@ -405,7 +405,7 @@ RMSEsvm= RMSE(predYsvm,com_test$hgb_difference_norm)
 RMSEsvm
 ## Tuning SVR model by varying values of maximum allowable error and cost parameter
 #Tune the SVM model
-OptModelsvm=tune(svm, hgb_difference_norm~., data=com_train,ranges=list(elsilon=seq(0,1,0.1), cost=1:100))
+OptModelsvm=tune(svm, hgb_difference_norm~., data=com_train,ranges=list(elsilon=seq(0,1,0.1), cost=1:100,gamma =c(0.0005,0.0001,0.005,0.05,0.5)))
 #Print optimum value of parameters
 print(OptModelsvm)
 #Plot the perfrormance of SVM Regression model
