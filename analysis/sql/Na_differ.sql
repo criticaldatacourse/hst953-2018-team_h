@@ -1,3 +1,5 @@
+---- This calcualte the difference between first measurement of Sodium and the last measurement within 24 hr
+
 select n.subject_id, n.hadm_id, n.icustay_id,h.admission_time as ICU_admitted, n.first_measurement, h.last_measurement,
 n.Na_1st, 
 h.Na_24,
