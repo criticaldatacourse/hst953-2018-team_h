@@ -1,3 +1,5 @@
+---- This clculate the difference between measurements of chloride
+
 select n.subject_id, n.hadm_id, n.icustay_id,h.admission_time as ICU_admitted, n.first_measurement, h.last_measurement,
 n.cl_1st, 
 h.cl_24,
