@@ -1,3 +1,6 @@
+---- It's script that selecting all the demographic features including age, ethnicitu, weight, 
+---- and laboratory measurements including hemoglobin, creatinine, urine ouput, mechnical ventialation settings
+
 with t1 as (
 select f.ethnicity, f.diagnosis, f.age, f.weight_first, f.subject_id, 
 f.icustay_id, f.hadm_id, f.ICU_admitted, f.first_measurement, f.last_measurement,
