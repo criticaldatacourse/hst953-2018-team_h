@@ -12,6 +12,7 @@ WITH pvt AS (
     -- so these are only upper limit checks
     CASE
       when le.itemid = 50983 and le.valuenum >    200 then null 
+   --- for Na, we rule out those lab events with value larger than 200 
     ELSE le.valuenum
     END AS valuenum
   FROM `physionet-data.mimiciii_clinical.icustays` ie
@@ -28,9 +29,7 @@ WITH pvt AS (
     LEFT JOIN `physionet-data.mimiciii_clinical.admissions` ad
     ON ie.subject_id = ad.subject_id
     AND ie.hadm_id = ad.hadm_id
-    
-    -- WHERE ie.subject_id < 10000
-    
+        
 ),
 ranked AS (
 SELECT pvt.*, DENSE_RANK() OVER (PARTITION BY 
@@ -39,6 +38,7 @@ FROM pvt
 left join `hst-953-2018.team_h.valid_pt_received_ns` as h 
 on h.hadm_id = pvt.hadm_id and h.subject_id = pvt.subject_id
 where pvt.hr <= 24 and pvt.hadm_id in 
+  ---- selecting the lab event with maximum timestamp within 24 hours
 (select hadm_id from `hst-953-2018.team_h.valid_pt_received_ns`) and pvt.charttime > h.ns_given_time
 ) 
 SELECT r.subject_id, r.hadm_id, r.icustay_id,min(r.intime) as admission_time, max(r.charttime) as last_measurement
