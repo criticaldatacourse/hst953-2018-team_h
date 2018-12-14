@@ -23,7 +23,7 @@ WITH pvt AS (
     AND le.hadm_id = ie.hadm_id
     AND le.itemid IN
     (
-      50882, -- HEMOGLOBIN | HEMATOLOGY | BLOOD | 752523
+      50882, 
       50803
     )
     AND le.valuenum IS NOT null 
@@ -32,9 +32,7 @@ WITH pvt AS (
     LEFT JOIN `physionet-data.mimiciii_clinical.admissions` ad
     ON ie.subject_id = ad.subject_id
     AND ie.hadm_id = ad.hadm_id
-    
-    -- WHERE ie.subject_id < 10000
-    
+       
 ),
 ranked AS (
 SELECT pvt.*, DENSE_RANK() OVER (PARTITION BY 
