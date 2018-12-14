@@ -1,4 +1,7 @@
-select oe.icustay_id, min(oe.charttime) as charttime, oe.hadm_id, icu.intime, max(DATETIME_DIFF(oe.charttime, icu.intime, SECOND)/60.0/60.0)
+---- It extracts the urine output and the weight of patients 
+
+select oe.icustay_id, min(oe.charttime) as charttime, oe.hadm_id, icu.intime, 
+max(DATETIME_DIFF(oe.charttime, icu.intime, SECOND)/60.0/60.0)
 as hr, SUM(
 -- we consider input of GU irrigant as a negative volume
 case when oe.itemid = 227488 then -1*oe.value
