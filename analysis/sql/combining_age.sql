@@ -1,3 +1,4 @@
+---- This extract the age of patients
 WITH patientAge AS(
 SELECT ad.hadm_id, ad.subject_id, (DATETIME_DIFF(ad.admittime,p.dob, year)) 
             AS age
