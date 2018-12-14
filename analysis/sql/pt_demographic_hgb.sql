@@ -1,3 +1,6 @@
+---- querying hemoglobin for patients who are within the inclusion criteria. 
+
+
 WITH patientAge AS(
 SELECT ad.hadm_id, ad.subject_id, (DATETIME_DIFF(ad.admittime,p.dob, year)) 
             AS age
