@@ -1,3 +1,5 @@
+---- The excluded ICD-9 code were as below
+
 with t1 as( 
               select  subject_id,HADM_ID
               from  `physionet-data.mimiciii_clinical.diagnoses_icd`
