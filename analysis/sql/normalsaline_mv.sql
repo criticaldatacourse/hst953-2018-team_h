@@ -1,4 +1,7 @@
- select
+---- This extracts the total volumn of normal saline that patients received from the  nputevents_mv 
+ 
+
+select
     co.icustay_id, co.subject_id, mv.starttime as starttime
   , DATETIME_DIFF(mv.endtime, co.intime, SECOND)/60.0/60.0 as hr
   -- standardize the units to millilitres
