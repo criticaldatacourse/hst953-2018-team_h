@@ -1,4 +1,5 @@
- select
+---- This extracts the total volumn of normal saline that patients received from the  nputevents_cv 
+select
     co.icustay_id, co.subject_id, cv.charttime as starttime
   , (DATETIME_DIFF(cv.charttime, co.intime, SECOND)/60.0/60.0 + (amount/ORIGINALRATE)) as hr
   -- carevue always has units in millilitres
