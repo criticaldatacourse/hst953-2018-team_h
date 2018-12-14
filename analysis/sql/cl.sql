@@ -23,7 +23,7 @@ WITH pvt AS (
     AND le.hadm_id = ie.hadm_id
     AND le.itemid IN
     (
-      50902, -- HEMOGLOBIN | HEMATOLOGY | BLOOD | 752523
+      50902, ---- chloride 
       50806
     )
     AND le.valuenum IS NOT null 
@@ -32,9 +32,7 @@ WITH pvt AS (
     LEFT JOIN `physionet-data.mimiciii_clinical.admissions` ad
     ON ie.subject_id = ad.subject_id
     AND ie.hadm_id = ad.hadm_id
-    
-    -- WHERE ie.subject_id < 10000
-    
+       
 ),
 ranked AS (
 SELECT pvt.*, DENSE_RANK() OVER (PARTITION BY 
@@ -44,6 +42,7 @@ left join `hst-953-2018.team_h.valid_pt_received_ns` as h
 on h.hadm_id = pvt.hadm_id and h.subject_id = pvt.subject_id
 where  pvt.hr >= -6 and pvt.hadm_id in (select hadm_id from `hst-953-2018.team_h.valid_pt_received_ns`) and pvt.charttime <= h.ns_given_time
 )
+--- The minumum timestamp of ICU admission 
 SELECT r.subject_id, r.hadm_id, r.icustay_id, min(r.intime) as admission_time, min(r.charttime) as first_measurement
   , max(case when label = 'CHLORIDE' then valuenum else null end) as Cl_1st
 FROM ranked r
