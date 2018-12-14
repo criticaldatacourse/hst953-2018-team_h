@@ -1,3 +1,5 @@
+---- This script combines the total volume of normal saline and the difference of hemoglobin between measurements
+
 
 select hgb.subject_id,  hgb.icustay_id, hgb.hadm_id, hgb.ICU_admitted, hgb.first_measurement, 
 hgb.last_measurement,
