@@ -1,0 +1,458 @@
+---
+title: "Team_h2"
+author: "Amita Ketkar"
+date: "12/6/2018"
+output: html_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(dplyr)
+library("ggpubr")
+library(plyr)
+library(pROC)
+library(cvTools) 
+library(glmnet)
+library(GGally)
+library(MASS)         # for cross validation and regression
+library(rsample)      # data splitting 
+library(randomForest) # basic implementation
+library(ranger)       # a faster implementation of randomForest
+library(caret)        # an aggregator package for performing many machine learning models
+library(h2o)          # an extremely fast java-based platform
+library(missRanger)   # Fast imputation of missing data
+library(e1071)        # Support machine vectors available through this library
+library(gbm)          # basic implementation
+library(xgboost)      # a faster implementation of gbm
+library(caret)        # an aggregator package for performing many machine learning models
+library(h2o)          # a java-based platform
+library(pdp)          # model visualization
+library(ggplot2)      # model visualization
+library(lime)         # model visualization
+library(Metrics)
+```
+
+#Load data
+```{r}
+setwd ("/Users/amitaketkar/Desktop/Fall_2018/Collaborative data science in medicine/MIT_Project/analysis")
+complete <- read_csv("everything.csv")
+complete = complete %>% mutate_if(is.character, as.factor)
+complete$ethnicity_asian <- ifelse(complete$ethnicity %in% c('ASIAN','ASIAN - CHINESE', 'ASIAN - CAMBODIAN', 'ASIAN - FILIPINO', 'ASIAN - VIETNAMESE', 'ASIAN - ASIAN INDIAN'), 1, 0)
+complete$ethnicity_hisp <- ifelse(complete$ethnicity %in% c('SOUTH AMERICAN', 'HISPANIC OR LATINO', 'HISPANIC/LATINO - CUBAN', "HISPANIC/LATINO - MEXICAN", "HISPANIC/LATINO - DOMINICAN",  "HISPANIC/LATINO - GUATEMALAN", "HISPANIC/LATINO - SALVADORAN", "HISPANIC/LATINO - CENTRAL AMERICAN (OTHER)", "HISPANIC/LATINO - CENTRAL AMERICAN (OTHER)"), 1, 0)
+complete$ethnicity_white <- ifelse(complete$ethnicity %in% c("WHITE", "WHITE - RUSSIAN", "WHITE - OTHER EUROPEAN", "WHITE - BRAZILIAN", "WHITE - EASTERN EUROPEAN", "PORTUGUESE", "MIDDLE EASTERN" ), 1, 0)
+complete$ethnicity_black <- ifelse(complete$ethnicity %in% c("BLACK/AFRICAN","BLACK/AFRICAN", "BLACK/HAITIAN", "BLACK/CAPE VERDEAN", "BLACK/AFRICAN AMERICAN" ),1,0)
+complete$ethnicity_other <- ifelse(complete$ethnicity %in% c("OTHER", "UNABLE TO OBTAIN", "MULTI RACE ETHNICITY", "UNKNOWN/NOT SPECIFIED", "PATIENT DECLINED TO ANSWER", "AMERICAN INDIAN/ALASKA NATIVE"),1, 0)
+weight <- read_csv("final_weights.csv")
+meanwt <- ddply(weight, .(icustay_id), summarise, mean_wt=mean(value))
+complete<- left_join(complete, meanwt, by = "icustay_id", copy = F, all.x = T)
+colnames(complete)
+drop_columns <- c("subject_id","icustay_id","hadm_id","ethnicity","diagnosis",
+                  "weight_first","ICU_admitted","first_measurement","last_measurement","hemoglobin_24",
+                  "Extubated","SelfExtubated","uo_1hr")
+complete <- complete[, !(names(complete) %in% drop_columns)]
+complete<-complete%>% mutate(Gender= ifelse(Gender == "M", 1 , 0))
+colnames(complete)
+str(complete)
+#impute
+complete<- missRanger(complete, maxiter = 10L, pmm.k = 0L, seed = NULL, verbose = 1)
+#ggpairs(complete, title = "Scatterplot Matrix of the Features of the Yacht Data Set")
+#split 
+set.seed(345)
+com_split <- initial_split(complete, prop = .7)
+com_train <- training(com_split)
+com_test  <- testing(com_split)
+str(com_test)
+#reorder
+com_train <-com_train[,c(3,7,16,1,2,4,5,6,8,9,10,11,12,13,14,15)]
+com_test <-com_test[,c(3,7,16,1,2,4,5,6,8,9,10,11,12,13,14,15)]
+#save max and min
+Max <- max(com_train$hgb_difference)
+Min <- min(com_train$hgb_difference)
+# write a function called normalised 
+normalized <- function(x){(x-min(x))/(max(x)-min(x))}
+#use it on train set , use those values even in test set
+for (i in 1:ncol(com_train)){
+  mincol <- min(com_train[,i])
+  maxcol <- max(com_train[,i])
+  com_train[,i] <- normalized(com_train[,i])
+  com_test[,i] <- (com_test[,i] - mincol) / (maxcol - mincol)
+}
+```
+
+# Linear Regression
+```{r}
+M1 <- lm( hgb_difference ~ ., data = com_train )
+pred<-predict(M1, com_test)
+RMSE(pred, com_test$hgb_difference)
+pred_denorm<-(pred*(Max-Min)+Min)
+com_test$hgb_difference_denorm <- (com_test$hgb_difference*(Max-Min)+Min)
+Err<- com_test$hgb_difference_denorm  - pred_denorm
+mean(Err)
+median(Err)
+RMSE(com_test$hgb_difference_denorm,pred_denorm)
+mse(com_test$hgb_difference_denorm,pred_denorm)
+mae(com_test$hgb_difference_denorm,pred_denorm)
+Metrics::mdae(com_test$hgb_difference_denorm,pred_denorm)
+```
+#Stepwise AIC
+```{r}
+set.seed((345))
+M2 <- stepAIC(M1, direction="both")
+M2 <- lm(
+  hgb_difference ~ cre_1st + uo_6hr + mean_wt + HEMOGLOBIN_1st + 
+    hr + total_ns_cv + Gender + ethnicity_asian + ethnicity_white + 
+    ethnicity_black + ethnicity_other,com_train)
+pred1<-predict(M2, com_test)
+RMSE(pred1, com_test$hgb_difference)
+pred_denorm1<-(pred1*(Max-Min)+Min)
+com_test$hgb_difference_denorm1 <- (com_test$hgb_difference*(Max-Min)+Min)
+Err1<- com_test$hgb_difference_denorm1 - pred_denorm1
+mean(Err1)
+median(Err1)
+RMSE(com_test$hgb_difference_denorm1,pred_denorm1)
+mse(com_test$hgb_difference_denorm1,pred_denorm1)
+mae(com_test$hgb_difference_denorm1,pred_denorm1)
+Metrics::mdae(com_test$hgb_difference_denorm1,pred_denorm1)
+```
+#random Forest
+```{r}
+
+m1 <- randomForest(formula = hgb_difference ~ ., data = com_train)
+m1
+plot(m1)
+which.min(m1$mse)
+sqrt(m1$mse[which.min(m1$mse)])
+```
+##
+```{r}
+set.seed(345)
+valid_split <- initial_split(complete, .8)
+com_train_v2 <- analysis(valid_split)
+com_valid <- assessment(valid_split)
+x_test <- com_valid[setdiff(names(com_valid), "hgb_difference")]
+y_test <- com_valid$hgb_difference
+str(x_test)
+str(y_test)
+rf_oob_comp <- randomForest(
+  formula = hgb_difference ~ .,
+  data    = com_train_v2,
+  xtest   = x_test,
+  ytest   = y_test
+)
+oob <- sqrt(rf_oob_comp$mse)
+validation <- sqrt(rf_oob_comp$test$mse)
+tibble::tibble(
+  `Out of Bag Error` = oob,
+  `Test error` = validation,
+  ntrees = 1:rf_oob_comp$ntree
+) %>%
+  gather(Metric, RMSE, -ntrees) %>%
+  ggplot(aes(ntrees, RMSE, color = Metric)) +
+  geom_line() +
+  scale_y_continuous() +
+  xlab("Number of trees")+
+  ggtitle("Out of Bucket Vs Test set error")
+```
+tuning
+```{r}
+features <- setdiff(names(com_train), "hgb_difference")
+
+
+set.seed(345)
+
+m2 <- tuneRF(
+  x          = com_train[features],
+  y          = com_train$hgb_difference,
+  ntreeTry   = 500,
+  mtryStart  = 2,
+  stepFactor = 1.5,
+  improve    = 0.01,
+  trace      = FALSE      # to not show real-time progress 
+)
+```
+
+create hypergrid
+```{r}
+hyper_grid <- expand.grid(
+  mtry       = seq(0, 15, by = 1),
+  node_size  = seq(2, 15, by = 1),
+  sampe_size = c(.55, .632, .70, .80),
+  OOB_RMSE   = 0
+)
+
+nrow(hyper_grid)
+for(i in 1:nrow(hyper_grid)) {
+  
+  # train model
+  model <- ranger(
+    formula         = hgb_difference~ ., 
+    data            = com_train, 
+    num.trees       = 500,
+    mtry            = hyper_grid$mtry[i],
+    min.node.size   = hyper_grid$node_size[i],
+    sample.fraction = hyper_grid$sampe_size[i],
+    seed            = 123
+  )
+  
+  # add OOB error to grid
+  hyper_grid$OOB_RMSE[i] <- sqrt(model$prediction.error)
+}
+
+#
+model$variable.importance %>% 
+  tidy() %>%
+  dplyr::arrange(desc(x)) %>%
+  dplyr::top_n(25) %>%
+  ggplot(aes(reorder(names, x), x)) +
+  geom_col() +
+  coord_flip() +
+  ggtitle("Top 25 important variables")
+
+
+hyper_grid %>% dplyr:: arrange(OOB_RMSE) %>% head(10)
+hist(hyper_grid$OOB_RMSE)
+## add Andre's code for using prediction
+pred_ranger <- predict(model, com_test)
+pred_ranger$denormalized_prediction<-((pred_ranger$predictions*(Max-Min))+Min)
+head(pred_ranger$denormalized_prediction)
+com_test$denormalized_hgb_diff <- ((com_test$hgb_difference*(Max-Min))+Min)
+head(com_test$denormalized_hgb_diff)
+a <- pred_ranger[["denormalized_prediction"]]
+dfres <- data.frame(a,com_test$denormalized_hgb_diff)
+Error<- dfres$com_test.denormalized_hgb_diff - dfres$a
+mean(Error)
+median(Error)
+RMSE(com_test$denormalized_hgb_diff,a)
+mse(com_test$denormalized_hgb_diff,a)
+mae(com_test$denormalized_hgb_diff, a)
+Metrics::mdae(com_test$denormalized_hgb_diff, a)
+```
+
+SVM 
+```{r}
+
+#Regression with SVM
+modelsvm = svm(hgb_difference~.,com_train, kernel = "radial")
+#Predict using SVM regression
+predYsvm = predict(modelsvm, com_test)
+##Calculate parameters of the SVR model
+#Find value of W
+W = t(modelsvm$coefs) %*% modelsvm$SV
+#Find value of b
+b = modelsvm$rho
+RMSEsvm= RMSE(predYsvm,com_test$hgb_difference)
+RMSEsvm
+## Tuning SVR model by varying values of maximum allowable error and cost parameter
+#Tune the SVM model
+OptModelsvm=tune(svm, hgb_difference~., data=com_train,ranges=list(elsilon=seq(0,1,0.1), cost=1:100,gamma =c(0.0005,0.0001,0.005,0.05,0.5)))
+#Print optimum value of parameters
+print(OptModelsvm)
+#Plot the perfrormance of SVM Regression model
+plot(OptModelsvm)
+#Find out the best model
+BstModel=OptModelsvm$best.model
+BstModel
+#Predict Y using best model
+PredYBst=predict(BstModel,com_test)
+predYBstdenorm = ((PredYBst*(Max-Min))+Min)
+head(predYBstdenorm)
+com_test$denormalized_hgb_diff <- ((com_test$hgb_difference*(Max-Min))+Min)
+head(com_test$denormalized_hgb_diff)
+#Find value of W
+W = t(BstModel$coefs) %*% BstModel$SV
+#Find value of b
+b = BstModel$rho
+RMSEsvmbst = RMSE(PredYBst,com_test$hgb_difference)
+RMSEsvmbst
+RMSEsvm= RMSE(predYBstdenorm,com_test$denormalized_hgb_diff)
+RMSEsvm
+Error1<- com_test$denormalized_hgb_diff - predYBstdenorm
+mean(Error1)
+median(Error1)
+mse(com_test$denormalized_hgb_diff,predYBstdenorm)
+mae(com_test$denormalized_hgb_diff,predYBstdenorm)
+Metrics::mdae(com_test$denormalized_hgb_diff,predYBstdenorm)
+```
+GBM 
+```{r}
+```
+## Fit basic gbm model
+```{r}
+# for reproducibility
+set.seed(123)
+
+# train GBM model
+gbm.fit <- gbm(
+  formula = hgb_difference~ .,
+  distribution = "gaussian",
+  data = com_train,
+  n.trees = 10000,
+  interaction.depth = 1,
+  shrinkage = 0.001,
+  cv.folds = 5,
+  n.cores = NULL, # will use all cores by default
+  verbose = FALSE
+  )  
+
+# print results
+print(gbm.fit)
+
+# get MSE and compute RMSE
+sqrt(min(gbm.fit$cv.error))
+
+
+# plot loss function as a result of n trees added to the ensemble
+gbm.perf(gbm.fit, method = "cv")
+```
+## Tuning 
+```{r}
+# for reproducibility
+set.seed(123)
+
+# train GBM model
+gbm.fit2 <- gbm(
+  formula = hgb_difference ~ .,
+  distribution = "gaussian",
+  data = com_train,
+  n.trees = 5000,
+  interaction.depth = 3,
+  shrinkage = 0.1,
+  cv.folds = 5,
+  n.cores = NULL, # will use all cores by default
+  verbose = FALSE
+  )  
+
+# find index for n trees with minimum CV error
+min_MSE <- which.min(gbm.fit2$cv.error)
+
+# get MSE and compute RMSE
+sqrt(gbm.fit2$cv.error[min_MSE])
+## [1] 23112.1
+
+# plot loss function as a result of n trees added to the ensemble
+gbm.perf(gbm.fit2, method = "cv")
+```
+## Create hypergrid 
+```{r}
+# create hyperparameter grid
+hyper_grid <- expand.grid(
+  shrinkage = c(.01, .1, .3),
+  interaction.depth = c(1, 3, 5),
+  n.minobsinnode = c(5, 10, 15),
+  bag.fraction = c(.65, .8, 1), 
+  optimal_trees = 0,               # a place to dump results
+  min_RMSE = 0                     # a place to dump results
+)
+
+# total number of combinations
+nrow(hyper_grid)
+
+```
+##Using hypergrid for search
+```{r}
+# randomize data
+random_index <- sample(1:nrow(com_train), nrow(com_train))
+random_com_train <- com_train[random_index, ]
+
+# grid search 
+for(i in 1:nrow(hyper_grid)) {
+  
+  # reproducibility
+  set.seed(123)
+  
+  # train model
+  gbm.tune <- gbm(
+    formula = hgb_difference~ .,
+    distribution = "gaussian",
+    data = com_train,
+    n.trees = 5000,
+    interaction.depth = hyper_grid$interaction.depth[i],
+    shrinkage = hyper_grid$shrinkage[i],
+    n.minobsinnode = hyper_grid$n.minobsinnode[i],
+    bag.fraction = hyper_grid$bag.fraction[i],
+    train.fraction = .75,
+    n.cores = NULL, # will use all cores by default
+    verbose = FALSE
+  )
+  
+  # add min training error and trees to grid
+  hyper_grid$optimal_trees[i] <- which.min(gbm.tune$valid.error)
+  hyper_grid$min_RMSE[i] <- sqrt(min(gbm.tune$valid.error))
+}
+
+hyper_grid %>% 
+  dplyr::arrange(min_RMSE) %>%
+  head(10)
+```
+## Take the best model out 
+```{r}
+# for reproducibility
+set.seed(123)
+
+# train GBM model
+gbm.fit.final <- gbm(
+    formula = hgb_difference ~ .,
+    distribution = "gaussian",
+    data = com_train,
+    n.trees = 1254,
+    interaction.depth = 3,
+    shrinkage = 0.01,
+    n.minobsinnode = 3,
+    bag.fraction = 0.65,
+    train.fraction = 1,
+    n.cores = NULL, # will use all cores by default
+    verbose = FALSE
+  )
+```
+## Visualisation
+```{r}
+par(mar = c(5, 8, 1, 1))
+summary(
+  gbm.fit.final, 
+  cBars = 10,
+  method = relative.influence, # also can use permutation.test.gbm
+  las = 2
+  )
+```
+## Predicting analysis
+```{r}
+# predict values for test data
+pred <- predict(gbm.fit.final, n.trees = gbm.fit.final$n.trees, com_test)
+denormalized_pred <- (pred*(Max-Min))+Min
+com_test$hgb_denorm_diff <- (com_test$hgb_difference*(Max-Min))+Min
+# results
+caret::RMSE(denormalized_pred, com_test$hgb_denorm_diff)
+Error2<- com_test$hgb_denorm_diff - denormalized_pred
+mean(Error2)
+median(Error2)
+mse(com_test$hgb_denorm_diff,denormalized_pred)
+mae(com_test$hgb_denorm_diff,denormalized_pred)
+Metrics::mdae(com_test$hgb_denorm_diff,denormalized_pred)
+Error_abs <- abs(Error2)
+multiclass.roc(com_test$hgb_denorm_diff,denormalized_pred)
+ggplot()+
+  geom_point(aes(x=com_test$hgb_denorm_diff, y=Error_abs))+
+  geom_smooth( method = "glm")+
+  xlab("Actual difference in hemoglobin level") +
+  ylab("Absolute Error in predictions")+
+  ggtitle("Error across difference levels of hemoglobin difference")
+```
+
+# Neural Networks
+```{r}
+my.grid <- expand.grid(.decay = c(0.5, 0.1), .size = c(5, 6, 7))
+com.fit <- train(hgb_difference~ ., data = com_train, method = "nnet", maxit = 1000, tuneGrid = my.grid, trace = F, linout = 1) 
+com.predict <- predict(com.fit, newdata = com_test)
+denormalized_pred <- (com.predict*(Max-Min))+Min
+hgb_denorm_diff <- (com_test$hgb_difference*(Max-Min))+Min
+com.rmse <- sqrt(mean((denormalized_pred - hgb_denorm_diff)^2)) 
+com.rmse
+Error3<- hgb_denorm_diff - denormalized_pred
+mean(Error3)
+median(Error3)
+mse(com.test$hgb_denorm_diff,denormalized_pred)
+mae(com.test$hgb_denorm_diff,denormalized_pred)
+Metrics::mdae(com.test$hgb_denorm_diff,denormalized_pred)
+```
+
+
