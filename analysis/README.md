@@ -1,4 +1,4 @@
-Prediction Model for Hemodilution Effect among patients with Fluid Resuscitation
+                    Prediction Model for Hemodilution Effect among patients with Fluid Resuscitation
 
 Background:
 The administration of intravenous fluid (resuscitation) is one of the most common interventions in intensive care medicine. Decreased concentration of hemoglobin in intravascular plasma volume due to IV fluid infusion is called hemodilution. Clear guidelines do not exist for determination of the expected amount of hemodilution after fluid administration. The main goal of this study is to qualify and identify any correlation in the change in hemoglobin to the amount of fluid administered, and to evaluate also for any other factors that may contribute to hemodilution.
